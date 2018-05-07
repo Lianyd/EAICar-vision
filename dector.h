@@ -21,7 +21,6 @@ using namespace std;
 class Dector {
 private:
     bool debug = true;
-    const static int RATIO = 2;//1代表640x480,2代表1280x720
     int CAR_CENTRE_COL = 0;
     int CAR_CENTRE_ROW = 0;
     int LINE_WIDTH_MAX = 0;
@@ -65,7 +64,6 @@ public:
     int last_decode_value = 0;
     volatile int centre_y = 0;
     volatile int centre_x = 320;
-    volatile bool turned = false;
     volatile int routeNodes[30];
     volatile int command[30];
     volatile int nodeIndex = 0;
@@ -77,7 +75,7 @@ public:
     int imageCols = 0;
     int imageRows = 0;
     int roiCols = 640;
-    int roiRows = 640;
+    int roiRows = 720;
     Dector();
     void cameraTest(int clnt);
     void videoTest(string, int clnt);

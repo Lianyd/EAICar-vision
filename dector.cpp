@@ -1,54 +1,29 @@
 #include "dector.h"
 
 Dector::Dector() {
-    switch (RATIO) {
-    case 1:
-        LINE_WIDTH_MAX = 50;
-        LINE_WIDTH_MIN = 2;
-        TWOTIMES_WHITE_LINE_WIDTH_MAX = 5;
-        ONE_TIME_THRESHOLD = 4;
-        MEAN_CENTRE_GAP = 35;
-        EDGE_CENTRE_ROW_GAP_1 = 20;
-        EDGE_CENTRE_COL_GAP_1 = 35;
-        KERNELS_COUNT = 2;
-        MARKS_GAP = 100;
-        SAME_LINE_ANGLE = 20;
-        SAME_LINE_GAP_1 = 5;
-        AREA_1 = 70;
-        AREA_2 = 140;
-        AREA_3 = 200;
-        imageCols = 640;
-        imageRows = 480;
-        CAR_CENTRE_COL = imageCols/2 - 20 - centre_x;
-        break;
-    case 2:
-        LINE_WIDTH_MAX = 50;
-        LINE_WIDTH_MIN = 2;
-        TWOTIMES_WHITE_LINE_WIDTH_MAX = 8;
-        ONE_TIME_THRESHOLD = 4;
-        MEAN_CENTRE_GAP = 35;
-        EDGE_CENTRE_ROW_GAP_1 = 12;
-        EDGE_CENTRE_COL_GAP_1 = 24;
-        EDGE_CENTRE_ROW_GAP_2 = 19;
-        EDGE_CENTRE_COL_GAP_2 = 35;
-        EDGE_CENTRE_ROW_GAP_3 = 22;
-        EDGE_CENTRE_COL_GAP_3 = 45;
-        KERNELS_COUNT = 2;
-        MARKS_GAP = 180;
-        SAME_LINE_ANGLE = 20;
-        SAME_LINE_GAP_1 = 12;
-        SAME_LINE_GAP_2 = 20;
-        AREA_1 = 100;
-        AREA_2 = 150;
-        AREA_3 = 200;
-        imageCols = 1280;
-        imageRows = 720;
-        CAR_CENTRE_COL = imageCols/2 - 50 - centre_x;
-        CAR_CENTRE_ROW = imageRows/3 - 78 - roiRows;
-        break;
-    default:
-        break;
-    }
+    LINE_WIDTH_MAX = 50;
+    LINE_WIDTH_MIN = 2;
+    TWOTIMES_WHITE_LINE_WIDTH_MAX = 8;
+    ONE_TIME_THRESHOLD = 4;
+    MEAN_CENTRE_GAP = 35;
+    EDGE_CENTRE_ROW_GAP_1 = 12;
+    EDGE_CENTRE_COL_GAP_1 = 24;
+    EDGE_CENTRE_ROW_GAP_2 = 19;
+    EDGE_CENTRE_COL_GAP_2 = 35;
+    EDGE_CENTRE_ROW_GAP_3 = 22;
+    EDGE_CENTRE_COL_GAP_3 = 45;
+    KERNELS_COUNT = 2;
+    MARKS_GAP = 180;
+    SAME_LINE_ANGLE = 20;
+    SAME_LINE_GAP_1 = 12;
+    SAME_LINE_GAP_2 = 20;
+    AREA_1 = 100;
+    AREA_2 = 150;
+    AREA_3 = 200;
+    imageCols = 1280;
+    imageRows = 720;
+    CAR_CENTRE_COL = imageCols/2 - 50 - centre_x;
+    CAR_CENTRE_ROW = imageRows/3 - 78 - roiRows;
 }
 
 void Dector::cameraTest(int clnt){
@@ -94,12 +69,6 @@ void Dector::mediaStream(VideoCapture capture, int delay){
         if (frame.empty()) break;
 
         int roi_x = centre_x + last_roi_x - 320;
-	if(!turned) {    
-            int roi_x = centre_x + last_roi_x - 320;
-	} else {
-	    roi_x = 320;
-	    turned = false;
-	}
         if(roi_x + roiCols > frame.cols) {
             roi_x = 320;
         }
@@ -117,14 +86,13 @@ void Dector::mediaStream(VideoCapture capture, int delay){
         if(debug){
             totalTime += (clock() - start);
             count++;
-            if (count == 1) {
-                count = 0;
-                totalTime = 0;
-
+            if (count == 10) {
                 stringstream ss;
-                ss << (double)(totalTime/count)/CLOCKS_PER_SEC;
+                ss << (double)(totalTime)/CLOCKS_PER_SEC/count;
                 std::string text = ss.str();
                 myPutText(text, srcROI, 100, 100);
+                count = 0;
+                totalTime = 0;
             }
             imshow("after", thresholded);
             moveWindow("after", 900, 0);
@@ -226,7 +194,7 @@ void Dector::imageProcess(Mat& frame, Mat& thresholded){
         }
 
         if(debug) {
-            myPutText(to_string(decode_value), frame, 100, 300);
+//            myPutText(to_string(decode_value), frame, 100, 300);
             cout << "decode time:" << (double)(clock() - start4)/CLOCKS_PER_SEC << endl;
             for(vector<Point>::iterator it = encodePoints.begin(); it != encodePoints.end(); ++it) {
                 if(it->x != 0 && it->y != 0) {

@@ -356,9 +356,9 @@ void PIDControl(){
     send_buf[5] = 48 + right_value/10;
     send_buf[6] = 48 + (right_value - (send_buf[5] - 48)*10);
 
-        if(UART_Send(fd,send_buf,9) <= 0){
-            printf("send data failed!\n");
-        }
+//    if(UART_Send(fd,send_buf,9) <= 0){
+//        printf("send data failed!\n");
+//    }
     sLock.unlock();
 }
 

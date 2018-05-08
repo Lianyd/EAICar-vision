@@ -29,7 +29,7 @@ float err_last = 0;
 int D_value = 0;
 int MAX_D_VALUE = 40;
 float integral = 0;
-float Kp = 0.12,Ki = 0,Kd = 4;
+float Kp = 0.12,Ki = 0,Kd = 0;
 int speed = 50;
 volatile bool stopPid = false;
 double lastTime = 0;
@@ -200,9 +200,9 @@ void MotroCarControl(){
 //                dector.nodeIndex++;
 //                dector.readyToTurn = false;
             } else if(dector.centre_y > dector.imageRows/3){
-//                turn(780000, dector.command[dector.nodeIndex]);
-//                dector.nodeIndex++;
-//                dector.readyToTurn = false;
+                turn(840000, dector.command[dector.nodeIndex]);
+                dector.nodeIndex++;
+                dector.readyToTurn = false;
             }
         }
         if(dector.commandStop) {
@@ -264,7 +264,7 @@ void turn(int time, int type){//4:turnRight 3:turnLeft 1:farword 5:stop
     }
     cout << "motro car stop to turn!" << endl;
 
-    usleep(1000000);
+    usleep(300000);
 
     char send_buf_turn[10] = {'z',' ','5','0',' ','-','5','0',';','\r'};
     if(type == 4) {
@@ -280,7 +280,7 @@ void turn(int time, int type){//4:turnRight 3:turnLeft 1:farword 5:stop
     }
     sLock.unlock();
 
-    usleep(780000);
+    usleep(769000);
 
     sLock.lock();
     if(UART_Send(fd,send_buf_stop,10) <= 0){
@@ -289,7 +289,7 @@ void turn(int time, int type){//4:turnRight 3:turnLeft 1:farword 5:stop
     cout << "car finished turning, now going" << endl;
     sLock.unlock();
 
-    usleep(1000000);
+//    usleep(1000000);
     stopPid = false;
     finishedTurn = true;
     turned = true;
@@ -356,9 +356,9 @@ void PIDControl(){
     send_buf[5] = 48 + right_value/10;
     send_buf[6] = 48 + (right_value - (send_buf[5] - 48)*10);
 
-//    if(UART_Send(fd,send_buf,9) <= 0){
-//        printf("send data failed!\n");
-//    }
+    if(UART_Send(fd,send_buf,9) <= 0){
+        printf("send data failed!\n");
+    }
     sLock.unlock();
 }
 

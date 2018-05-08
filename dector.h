@@ -20,7 +20,7 @@ using namespace std;
 
 class Dector {
 private:
-    bool debug = true;
+    bool debug = false;
     int CAR_CENTRE_COL = 0;
     int CAR_CENTRE_ROW = 0;
     int LINE_WIDTH_MAX = 0;

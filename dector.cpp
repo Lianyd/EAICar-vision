@@ -22,7 +22,7 @@ Dector::Dector() {
     AREA_3 = 200;
     imageCols = 1280;
     imageRows = 720;
-    CAR_CENTRE_COL = imageCols/2 - 50 - centre_x;
+    CAR_CENTRE_COL = imageCols/2 + 62 - centre_x;
     CAR_CENTRE_ROW = imageRows/3 - 78 - roiRows;
 }
 
@@ -75,7 +75,7 @@ void Dector::mediaStream(VideoCapture capture, int delay){
         if(roi_x < 0) {
             roi_x = 0;
         }
-        CAR_CENTRE_COL = frame.cols/2 - 50 - 320;
+        CAR_CENTRE_COL = frame.cols/2 + 62 - 320;
         Mat srcROI(frame, Rect(320, frame.rows - roiRows, roiCols, roiRows));
         last_roi_x = roi_x;
 
@@ -148,6 +148,8 @@ void Dector::imageProcess(Mat& frame, Mat& thresholded){
     clock_t start3 = clock();
     if(points.size() >= 6 && isValidPoint(points[3]) && isValidPoint(points[4]) && isValidPoint(points[5])) {
         errorMeasure(points, frame);
+    } else {
+	position_err = 0;
     }
     if(debug) {
         cout << "errorMeasure time:" << (double)(clock() - start3)/CLOCKS_PER_SEC << endl;
@@ -173,28 +175,29 @@ void Dector::imageProcess(Mat& frame, Mat& thresholded){
         clock_t start4 = clock();
         vector<Point> encodePoints;
         int value = decodeImage(thresholded, points, encodePoints);
-        if(!stopDecode && value != 0 && centre_y > imageRows/6) {
+        if(!stopDecode && value > 0 && centre_y > imageRows/4) {
             last_decode_value = decode_value;
             decode_value = value;
+        
+            if(!stopDecode && decode_value != last_decode_value){
+                if(decode_value == 1542 || decode_value == 640 || decode_value == 1782 || decode_value == 1791
+			   || decode_value == routeNodes[nodeIndex] || decode_value == stopNum) {
+                    readyToTurn = true;
+		    if(decode_value == stopNum){
+		        stopDecode = true;
+		    }
+                    cout << "decode_value:" << decode_value << " ready to turn!" << endl;
+                 } else {
+                    cout << "decode_value:" << decode_value << endl;
+                 }
+
+
+                 const char * data = ("c" + to_string(decode_value) + "e").data();
+                 write(clnt_sock, data, strlen(data));
+             }
         }
-        if(!stopDecode && decode_value != 0 && decode_value != last_decode_value){
-            if(decode_value == routeNodes[nodeIndex] || decode_value == stopNum) {
-                readyToTurn = true;
-		if(decode_value == stopNum){
-		    stopDecode = true;
-		}
-                cout << "decode_value:" << decode_value << " ready to turn!" << endl;
-            } else {
-                cout << "decode_value:" << decode_value << endl;
-            }
-
-
-            const char * data = ("c" + to_string(decode_value) + "e").data();
-            write(clnt_sock, data, strlen(data));
-        }
-
         if(debug) {
-//            myPutText(to_string(decode_value), frame, 100, 300);
+            myPutText(to_string(decode_value), frame, 100, 300);
             cout << "decode time:" << (double)(clock() - start4)/CLOCKS_PER_SEC << endl;
             for(vector<Point>::iterator it = encodePoints.begin(); it != encodePoints.end(); ++it) {
                 if(it->x != 0 && it->y != 0) {
